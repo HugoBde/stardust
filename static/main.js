@@ -1,4 +1,5 @@
 let t = 0;
+let mouse_coords = [0., 0.];
 
 let buffers = null;
 let program_info = null;
@@ -23,7 +24,7 @@ let fragment_source = `#version 300 es
   `;
 
 function main() {
-  const gl = init_gl();
+  const gl = init();
 
   if (gl === null) {
     console.log("Failed to get gl context");
@@ -71,10 +72,29 @@ function main() {
 }
 
 /**
+  * @param {HTMLCanvasElement} canvas
+  * @param {MouseEvent} event
+  * @returns {[number, number]}
+  */
+function get_mouse_pos(canvas, event) {
+  const rect = canvas.getBoundingClientRect();
+  // Calculate mouse coordinates relative to the canvas
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  return [x, y];
+}
+
+/**
   * @returns {WebGLRenderingContext | null}
   */
-function init_gl() {
+function init() {
   const canvas = document.getElementById("canvas");
+  canvas.onmousemove = (event) => {
+    mouse_coords = get_mouse_pos(canvas, event);
+  }
+  canvas.onmouseout = (_) => {
+    mouse_coords = [0, 0];
+  }
   return canvas.getContext("webgl2");
 }
 
@@ -118,6 +138,7 @@ function render(gl) {
 
   t += 0.01;
   gl.uniform1f(program_info.uniform_locations[0].location, t)
+  gl.uniform2fv(program_info.uniform_locations[1].location, mouse_coords);
 
   {
     const offset = 0;
@@ -193,7 +214,8 @@ function init_shader_program(gl, vertex_source, fragment_source) {
       { name: "vertex_position", location: gl.getAttribLocation(shader_program, "aVertexPosition") }
     ],
     uniform_locations: [
-      { name: "t", location: gl.getUniformLocation(shader_program, "t") }
+      { name: "t", location: gl.getUniformLocation(shader_program, "t") },
+      { name: "mouseCoord", location: gl.getUniformLocation(shader_program, "mouseCoord") }
     ],
   };
 
