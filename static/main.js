@@ -80,7 +80,7 @@ function get_mouse_pos(canvas, event) {
   const rect = canvas.getBoundingClientRect();
   // Calculate mouse coordinates relative to the canvas
   const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
+  const y = -event.clientY + rect.bottom;
   return [x, y];
 }
 

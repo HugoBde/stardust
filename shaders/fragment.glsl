@@ -35,12 +35,19 @@ vec3 ordered_dither_4(vec3 c) {
 }
 
 void main() {
-    float a = (fragCoord.x + fragCoord.y) * 0.25 + 0.5;
-    vec3 c = vec3(a * positive_sin(t), a * positive_cos(t), 0.7);
+    float r = positive_sin(0. + t + length(fragCoord));
+    float g = positive_sin(1. + t + length(fragCoord));
+    float b = positive_sin(2.5 + t + length(fragCoord));
+    vec3 c = vec3(r, g, b);
 
     if (mouseCoord.x > gl_FragCoord.x) {
-        fragColor = vec4(quantize(ordered_dither_4(c)), 1.0);
-    } else {
-        fragColor = vec4(quantize(c), 1.0);
+        fragColor = vec4(c, 1.0);
+    }
+    else {
+        if (mouseCoord.y > gl_FragCoord.y) {
+            fragColor = vec4(quantize(ordered_dither_4(c)), 1.0);
+        } else {
+            fragColor = vec4(quantize(c), 1.0);
+        }
     }
 }
