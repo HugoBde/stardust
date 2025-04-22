@@ -2,6 +2,7 @@ html {
     margin: 0;
     padding: 0;
     height: 100%;
+    font-family: "BDEKeley", 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
 }
 
 body {
@@ -11,6 +12,10 @@ body {
     align-items: center;
     justify-content: center;
     height: 100%;
+}
+
+p {
+    text-align: center;
 }
 
 canvas {

@@ -6,7 +6,7 @@ out vec4 fragColor;
 uniform float t;
 uniform vec2 mouseCoord;
 
-int quantize_steps = 4;
+int quantize_steps = 2;
 
 float quantize(float f) {
     f = ceil(f * float(quantize_steps));

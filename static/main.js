@@ -1,5 +1,6 @@
 let t = 0;
 let mouse_coords = [0., 0.];
+let frames = 0;
 
 let buffers = null;
 let program_info = null;
@@ -23,6 +24,14 @@ let fragment_source = `#version 300 es
     }
   `;
 
+let framerateCounter = document.getElementById("framerateCounter");
+
+function updateFramerate() {
+  let fps = Math.round(frames / 0.25);
+  frames = 0;
+  framerateCounter.innerHTML = `${fps} fps`;
+}
+
 function main() {
   const gl = init();
 
@@ -39,6 +48,8 @@ function main() {
   }
 
   buffers = init_buffers(gl);
+
+  setInterval(updateFramerate, 250)
 
   render(gl, buffers, program_info);
 
@@ -145,6 +156,8 @@ function render(gl) {
     const vertex_count = 4;
     gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertex_count);
   }
+
+  frames += 1;
 
   requestAnimationFrame(() => render(gl, buffers, program_info));
 }
