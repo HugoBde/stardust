@@ -2,6 +2,7 @@ const std = @import("std");
 const glfw = @import("c.zig").glfw;
 const zgl = @import("zgl");
 const shaders = @import("shaders.zig");
+const camera = @import("camera.zig");
 
 const self = @This();
 
@@ -28,7 +29,10 @@ pub fn render(program_info: shaders.ProgramInfo, vertex_array: zgl.VertexArray) 
     program_info.program.use();
 
     zgl.uniform1f(program_info.uniforms.get("t"), self.t);
-    zgl.uniform2f(program_info.uniforms.get("mouseCoord"), self.mouse_x, self.mouse_y);
+    zgl.uniform2f(program_info.uniforms.get("mouse_coord"), self.mouse_x, self.mouse_y);
+
+    zgl.uniform3f(program_info.uniforms.get("camera"), camera.camera.v[0], camera.camera.v[1], camera.camera.v[2]);
+    zgl.uniform3f(program_info.uniforms.get("camera_dir"), camera.camera_dir.v[0], camera.camera_dir.v[1], camera.camera_dir.v[2]);
 
     vertex_array.bind();
     zgl.drawElements(zgl.PrimitiveType.triangles, 6, zgl.ElementType.unsigned_int, 0);

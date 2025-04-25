@@ -5,6 +5,7 @@ const zgl = @import("zgl");
 
 const shaders = @import("shaders.zig");
 const STATE = @import("state.zig");
+const camera = @import("camera.zig");
 
 pub fn main() !void {
     const window = try init();
@@ -50,7 +51,7 @@ pub fn main() !void {
 
     // Loop
     while (glfw.glfwWindowShouldClose(window) == 0) {
-        processInput(window);
+        glfw.glfwPollEvents();
 
         STATE.t += 0.01;
 
@@ -80,6 +81,8 @@ fn init() !*glfw.GLFWwindow {
     // Make window our current context
     glfw.glfwMakeContextCurrent(window);
 
+    _ = glfw.glfwSetKeyCallback(window, keyCallback);
+
     try zgl.loadExtensions(void, getProcAddress);
 
     zgl.viewport(0, 0, 800, 600);
@@ -91,11 +94,20 @@ fn cleanup() void {
     glfw.glfwTerminate();
 }
 
-fn processInput(window: *glfw.GLFWwindow) void {
-    glfw.glfwPollEvents();
+fn keyCallback(window: ?*glfw.GLFWwindow, key: c_int, _: c_int, action: c_int, _: c_int) callconv(.C) void {
+    if (action == glfw.GLFW_RELEASE) {
+        return;
+    }
 
-    if (glfw.glfwGetKey(window, glfw.GLFW_KEY_ESCAPE) == glfw.GLFW_PRESS) {
-        glfw.glfwSetWindowShouldClose(window, @intFromBool(true));
+    switch (key) {
+        glfw.GLFW_KEY_UP => {},
+        glfw.GLFW_KEY_LEFT => camera.cameraLeft(),
+        glfw.GLFW_KEY_RIGHT => {},
+        glfw.GLFW_KEY_DOWN => {},
+        glfw.GLFW_KEY_SPACE => camera.cameraUp(),
+        glfw.GLFW_KEY_LEFT_SHIFT => camera.cameraDown(),
+        glfw.GLFW_KEY_ESCAPE => glfw.glfwSetWindowShouldClose(window, @intFromBool(true)),
+        else => {},
     }
 }
 

@@ -1,14 +1,18 @@
 #version 450 
 
 precision highp float;
+
 layout(origin_upper_left) in vec4 gl_FragCoord;
-in vec2 fragCoord;
-out vec4 fragColor;
+
+in vec2 frag_coord;
+
+uniform vec2 mouse_coord;
 uniform float t;
-uniform vec2 mouseCoord;
+
+out vec4 frag_color;
+
 
 #define M_PI 3.1415926536
-
 int quantize_steps = 4;
 
 float quantize(float f) {
@@ -38,19 +42,19 @@ vec3 ordered_dither_4(vec3 c) {
 }
 
 void main() {
-    float r = positive_sin(+ t + length(fragCoord));
-    float g = positive_sin(M_PI / 3.0 + t + length(fragCoord));
-    float b = positive_sin(2.0 * M_PI / 3.0 + t + length(fragCoord));
+    float r = positive_sin(frag_coord.x);
+    float g = positive_sin(frag_coord.y);
+    float b = positive_sin(t);
     vec3 c = vec3(r, g, b);
 
-    if (mouseCoord.x > gl_FragCoord.x) {
-        fragColor = vec4(c, 1.0);
+    if (mouse_coord.x > gl_FragCoord.x) {
+        frag_color = vec4(c, 1.0);
     }
     else {
-        if (mouseCoord.y < gl_FragCoord.y) {
-            fragColor = vec4(quantize(ordered_dither_4(c)), 1.0);
+        if (mouse_coord.y < gl_FragCoord.y) {
+            frag_color = vec4(quantize(ordered_dither_4(c)), 1.0);
         } else {
-            fragColor = vec4(quantize(c), 1.0);
+            frag_color = vec4(quantize(c), 1.0);
         }
     }
 }

@@ -28,7 +28,9 @@ pub fn createProgram() !ProgramInfo {
     };
 
     try program_info.uniforms.put("t", try (zgl.getUniformLocation(program, "t") orelse error.Uniform));
-    try program_info.uniforms.put("mouseCoord", try (zgl.getUniformLocation(program, "mouseCoord") orelse error.Uniform));
+    try program_info.uniforms.put("mouse_coord", try (zgl.getUniformLocation(program, "mouse_coord") orelse error.Uniform));
+    // try program_info.uniforms.put("camera", try (zgl.getUniformLocation(program, "camera") orelse error.Uniform));
+    // try program_info.uniforms.put("camera_dir", try (zgl.getUniformLocation(program, "camera_dir") orelse error.Uniform));
 
     return program_info;
 }
