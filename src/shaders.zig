@@ -24,11 +24,13 @@ pub fn createProgram() !ProgramInfo {
 
     var program_info = ProgramInfo{
         .program = program,
-        .uniforms = std.StringHashMap(u32).init(allocators.GPA.allocator()),
+        .uniforms = std.StringHashMap(?u32).init(allocators.GPA.allocator()),
     };
 
-    try program_info.uniforms.put("t", try (zgl.getUniformLocation(program, "t") orelse error.Uniform));
-    try program_info.uniforms.put("mouse_coord", try (zgl.getUniformLocation(program, "mouse_coord") orelse error.Uniform));
+    try program_info.uniforms.put("t", zgl.getUniformLocation(program, "t"));
+    try program_info.uniforms.put("mouse_coord", zgl.getUniformLocation(program, "mouse_coord"));
+    try program_info.uniforms.put("view", zgl.getUniformLocation(program, "view"));
+    try program_info.uniforms.put("proj", zgl.getUniformLocation(program, "proj"));
     // try program_info.uniforms.put("camera", try (zgl.getUniformLocation(program, "camera") orelse error.Uniform));
     // try program_info.uniforms.put("camera_dir", try (zgl.getUniformLocation(program, "camera_dir") orelse error.Uniform));
 
@@ -57,7 +59,7 @@ fn createShader(filename: []const u8, shader_type: zgl.ShaderType, allocator: st
 
 pub const ProgramInfo = struct {
     program: zgl.Program,
-    uniforms: std.StringHashMap(u32),
+    uniforms: std.StringHashMap(?u32),
 };
 
 const ShaderError = error{Compile};

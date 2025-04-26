@@ -7,15 +7,19 @@ const shaders = @import("shaders.zig");
 const STATE = @import("state.zig");
 const camera = @import("camera.zig");
 
+const math = @import("math.zig");
+const Vec3 = math.Vec3;
+const Mat4 = math.Mat4;
+
 pub fn main() !void {
     const window = try init();
     defer cleanup();
 
-    const vertices = [_]Vertex{
-        Vertex{ .x = -1.0, .y = -1.0 },
-        Vertex{ .x = -1.0, .y = 1.0 },
-        Vertex{ .x = 1.0, .y = 1.0 },
-        Vertex{ .x = 1.0, .y = -1.0 },
+    const vertices = [_]Vec3{
+        Vec3{ .v = [3]f32{ -1.0, -1.0, -0.0 } },
+        Vec3{ .v = [3]f32{ 1.0, -1.0, -0.0 } },
+        Vec3{ .v = [3]f32{ 1.0, 1.0, -0.0 } },
+        Vec3{ .v = [3]f32{ -1.0, 1.0, -0.0 } },
     };
 
     const indices = [_]u32{
@@ -35,16 +39,16 @@ pub fn main() !void {
     defer element_buffer.delete();
 
     // Buffer data in VBO
-    vertex_buffer.storage(Vertex, vertices.len, &vertices, zgl.BufferStorageFlags{});
+    vertex_buffer.storage(Vec3, vertices.len, &vertices, zgl.BufferStorageFlags{});
 
     // Buffer data in EBO
     element_buffer.storage(u32, indices.len, &indices, zgl.BufferStorageFlags{});
 
-    vertex_array.vertexBuffer(0, vertex_buffer, 0, @sizeOf(Vertex));
+    vertex_array.vertexBuffer(0, vertex_buffer, 0, @sizeOf(Vec3));
     vertex_array.elementBuffer(element_buffer);
 
     vertex_array.enableVertexAttribute(0);
-    vertex_array.attribFormat(0, 2, zgl.Type.float, false, 0);
+    vertex_array.attribFormat(0, 3, zgl.Type.float, false, 0);
     vertex_array.attribBinding(0, 0);
 
     const program_info = try shaders.createProgram();
@@ -100,21 +104,16 @@ fn keyCallback(window: ?*glfw.GLFWwindow, key: c_int, _: c_int, action: c_int, _
     }
 
     switch (key) {
-        glfw.GLFW_KEY_UP => {},
-        glfw.GLFW_KEY_LEFT => camera.cameraLeft(),
-        glfw.GLFW_KEY_RIGHT => {},
-        glfw.GLFW_KEY_DOWN => {},
-        glfw.GLFW_KEY_SPACE => camera.cameraUp(),
-        glfw.GLFW_KEY_LEFT_SHIFT => camera.cameraDown(),
+        glfw.GLFW_KEY_K => camera.moveForward(),
+        glfw.GLFW_KEY_H => camera.moveLeft(),
+        glfw.GLFW_KEY_L => camera.moveRight(),
+        glfw.GLFW_KEY_J => camera.moveBackward(),
+        glfw.GLFW_KEY_SPACE => camera.moveUp(),
+        glfw.GLFW_KEY_V => camera.moveDown(),
         glfw.GLFW_KEY_ESCAPE => glfw.glfwSetWindowShouldClose(window, @intFromBool(true)),
         else => {},
     }
 }
-
-const Vertex = struct {
-    x: f32,
-    y: f32,
-};
 
 const InitError = error{
     Glew,

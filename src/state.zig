@@ -1,14 +1,19 @@
 const std = @import("std");
+
 const glfw = @import("c.zig").glfw;
 const zgl = @import("zgl");
+
 const shaders = @import("shaders.zig");
 const camera = @import("camera.zig");
+const Mat4 = @import("math.zig").Mat4;
+const Vec3 = @import("math.zig").Vec3;
 
 const self = @This();
 
 pub var t: f32 = 0.0;
 pub var mouse_x: f32 = 0.0;
 pub var mouse_y: f32 = 0.0;
+const proj = Mat4.projection_matrix(800.0 / 600.0, std.math.pi / 2.0, 0.1, 100.0);
 
 pub fn cursorPositionCallback(_: ?*glfw.GLFWwindow, x: f64, y: f64) callconv(.C) void {
     mouse_x = @floatCast(x);
@@ -28,11 +33,16 @@ pub fn render(program_info: shaders.ProgramInfo, vertex_array: zgl.VertexArray) 
 
     program_info.program.use();
 
-    zgl.uniform1f(program_info.uniforms.get("t"), self.t);
-    zgl.uniform2f(program_info.uniforms.get("mouse_coord"), self.mouse_x, self.mouse_y);
+    program_info.program.uniform1f(program_info.uniforms.get("t").?, self.t);
+    program_info.program.uniform2f(program_info.uniforms.get("mouse_coord").?, self.mouse_x, self.mouse_y);
 
-    zgl.uniform3f(program_info.uniforms.get("camera"), camera.camera.v[0], camera.camera.v[1], camera.camera.v[2]);
-    zgl.uniform3f(program_info.uniforms.get("camera_dir"), camera.camera_dir.v[0], camera.camera_dir.v[1], camera.camera_dir.v[2]);
+    const view = camera.lookAt();
+
+    std.debug.print("{}\n\n", .{proj});
+    std.debug.print("{}\n\n", .{view});
+
+    program_info.program.uniformMatrix4(program_info.uniforms.get("proj").?, true, &.{proj.m});
+    program_info.program.uniformMatrix4(program_info.uniforms.get("view").?, true, &.{view.m});
 
     vertex_array.bind();
     zgl.drawElements(zgl.PrimitiveType.triangles, 6, zgl.ElementType.unsigned_int, 0);

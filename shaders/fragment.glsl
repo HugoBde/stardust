@@ -1,4 +1,4 @@
-#version 450 
+#version 450
 
 precision highp float;
 
@@ -10,7 +10,6 @@ uniform vec2 mouse_coord;
 uniform float t;
 
 out vec4 frag_color;
-
 
 #define M_PI 3.1415926536
 int quantize_steps = 4;
@@ -45,6 +44,7 @@ void main() {
     float r = positive_sin(frag_coord.x);
     float g = positive_sin(frag_coord.y);
     float b = positive_sin(t);
+
     vec3 c = vec3(r, g, b);
 
     if (mouse_coord.x > gl_FragCoord.x) {
